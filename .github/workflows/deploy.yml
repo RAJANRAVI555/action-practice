@@ -15,13 +15,13 @@ jobs:
 
       - name: Build Docker image
         run: |
-          sudo docker build -t python-webpage .
+          docker build -t python-webpage .
 
       - name: Stop old container if running
         run: |
-          sudo docker stop python-webpage || true
-          sudo docker rm python-webpage || true
+          docker stop python-webpage || true
+          docker rm python-webpage || true
 
       - name: Run new container
         run: |
-          sudo docker run -d -p 5000:5000 --name python-webpage python-webpage
+          docker run -d -p 5000:5000 --name python-webpage python-webpage
