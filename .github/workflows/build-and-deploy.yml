@@ -32,7 +32,7 @@ jobs:
 
       - name: Verify Kubernetes access
         run: |
-          kubectl version --short
+          #kubectl version --short
           kubectl get nodes
 
       - name: Deploy to Kubernetes
