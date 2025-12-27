@@ -1,0 +1,30 @@
+name: Build and Deploy to Kubernetes
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build_and_deploy:
+    runs-on: self-hosted   # your self-hosted runner on 10.34.4.195
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build -t ravipratapgiri/githubactions:${{ github.run_number }} .
+
+      - name: Docker Login
+        run: |
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ravipratapgiri --password-stdin
+
+      - name: Push Docker image
+        run: |
+          docker push ravipratapgiri/githubactions:${{ github.run_number }}
+
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl set image deployment/python-k8s-demo-deploy python-container=ravipratapgiri/githubactions:${{ github.run_number }} --record || \
+          kubectl apply -f deployment.yaml && kubectl apply -f service.yaml
