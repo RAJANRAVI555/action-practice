@@ -23,6 +23,11 @@ jobs:
         run: |
           docker push ravipratapgiri/githubactions:${{ github.run_number }}
 
+      - name: Set Kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG_DATA }}" > ~/.kube/config
+
 
       - name: Deploy to Kubernetes
         run: |
