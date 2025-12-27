@@ -6,7 +6,8 @@ on:
 
 jobs:
   build_and_deploy:
-    runs-on: self-hosted   # your self-hosted runner on 10.34.4.195
+    runs-on: self-hosted   # your self-hosted runner at 10.34.4.195
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -27,16 +28,20 @@ jobs:
         run: |
           mkdir -p ~/.kube
           echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > ~/.kube/config
-          chmod 600 ~/.kube/config  
+          chmod 600 ~/.kube/config
 
+      - name: Verify Kubernetes access
+        run: |
+          kubectl version --short
+          kubectl get nodes
 
       - name: Deploy to Kubernetes
         run: |
-        # try to update the existing deployment; 
-        # if it doesn't exist, apply fresh manifests
+          # Try to update an existing deployment image.
+          # If it doesn't exist, apply fresh manifests.
           kubectl set image deployment/python-k8s-demo-deploy \
-          python-container=ravipratapgiri/githubactions:${{ github.run_number }} \
+            python-container=ravipratapgiri/githubactions:${{ github.run_number }} \
           || {
-          kubectl apply -f deployment.yaml
-          kubectl apply -f service.yaml
+            kubectl apply -f deployment.yaml
+            kubectl apply -f service.yaml
           }
